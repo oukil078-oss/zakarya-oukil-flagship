@@ -950,7 +950,10 @@ function SocialProof() {
               <div className="mb-5 flex gap-1 text-[color:var(--accent)]">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}</div>
               <p className="leading-8 text-white/70">“{t.quote}”</p>
               <div className="mt-6 flex items-center gap-3">
-                <img src={t.avatar} alt={t.name} className="h-12 w-12 rounded-full object-cover" />
+                <div className="relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full border border-[color:var(--accent)]/30 bg-[color:var(--accent)]/10">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_25%,rgba(255,255,255,.26),transparent_34%),linear-gradient(135deg,rgba(255,255,255,.08),transparent)]" />
+                  <span className="relative font-mono text-xs font-semibold uppercase tracking-[.18em] text-[color:var(--accent)]">{t.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span>
+                </div>
                 <div><p className="font-semibold">{t.name}</p><p className="text-sm text-white/45">{t.role}</p></div>
               </div>
             </div>
