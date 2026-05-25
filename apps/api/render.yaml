@@ -3,7 +3,8 @@ services:
     name: zakarya-oukil-api
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build --workspace=@zakarya/api && npm run prisma:migrate --workspace=@zakarya/api
+    buildCommand: npm ci --include=dev && npm run build --workspace=@zakarya/api
+    preDeployCommand: npm run prisma:migrate --workspace=@zakarya/api
     startCommand: npm run start --workspace=@zakarya/api
     healthCheckPath: /health
     envVars:

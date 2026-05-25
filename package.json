@@ -3,7 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "description": "Premium cinematic portfolio for Zakarya Oukil with Next.js, Express, PostgreSQL and Prisma.",
-  "workspaces": ["apps/web", "apps/api"],
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
   "scripts": {
     "dev": "npm run dev --workspace=@zakarya/web",
     "dev:web": "npm run dev --workspace=@zakarya/web",
@@ -20,6 +23,6 @@
     "prettier": "^3.3.3"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   }
 }
