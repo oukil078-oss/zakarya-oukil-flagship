@@ -103,20 +103,10 @@ a { color: inherit; text-decoration: none; }
   clip-path: polygon(15% 8%, 35% 0%, 65% 0%, 85% 8%, 100% 32%, 88% 82%, 62% 100%, 38% 100%, 12% 82%, 0 32%);
 }
 
-.portrait-card:hover .reveal-mask,
-.portrait-card:focus-within .reveal-mask,
-.portrait-card.is-revealed .reveal-mask {
-  opacity: .08;
-  transform: translateY(-8px) scale(.985);
-  filter: blur(1px) saturate(.45);
+.portrait-card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 72%, white);
+  outline-offset: 4px;
 }
-.portrait-card:hover .portrait-real,
-.portrait-card:focus-within .portrait-real,
-.portrait-card.is-revealed .portrait-real { filter: saturate(1.05) contrast(1.02); }
-
-.portrait-card:hover .visor,
-.portrait-card:focus-within .visor,
-.portrait-card.is-revealed .visor { opacity: 0; transform: scaleX(.4); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
@@ -136,10 +126,21 @@ a { color: inherit; text-decoration: none; }
   will-change: transform, opacity, filter;
 }
 
+.helmet-wrap {
+  transform-origin: 50% 43%;
+  backface-visibility: hidden;
+}
+
+.helmet-svg {
+  transform-origin: 50% 43%;
+  shape-rendering: geometricPrecision;
+}
+
 .helmet-svg path,
 .helmet-svg line,
 .helmet-svg circle,
-.helmet-svg ellipse {
+.helmet-svg ellipse,
+.helmet-svg rect {
   vector-effect: non-scaling-stroke;
 }
 

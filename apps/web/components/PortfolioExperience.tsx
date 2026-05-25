@@ -530,9 +530,9 @@ function HelmetOverlay({ active, revealed }: { active: Persona; revealed: boolea
     inner: `maskInnerShadow-${active.id}`,
   };
   const tone = active.id === "graphic" ? "editorial" : active.id === "dev" ? "terminal" : "precision";
-  const shellRevealOpacity = active.id === "graphic" ? 0.23 : active.id === "dev" ? 0.18 : 0.2;
-  const plate = { duration: 0.74, ease };
-  const glass = { duration: 0.54, ease };
+  const shellRevealOpacity = active.id === "graphic" ? 0.24 : active.id === "dev" ? 0.18 : 0.21;
+  const plate = { duration: 0.86, ease };
+  const glass = { duration: 0.64, ease };
 
   return (
     <motion.div
@@ -609,6 +609,9 @@ function HelmetOverlay({ active, revealed }: { active: Persona; revealed: boolea
           {active.id === "dev" && <DeveloperMask ids={ids} active={active} revealedOpacity={shellRevealOpacity} plate={plate} glass={glass} />}
         </g>
 
+        <MaskSpecularPass ids={ids} active={active} />
+        <MagneticScan active={active} />
+
         <motion.g
           variants={{ closed: { opacity: 0.95, y: 0 }, revealed: { opacity: 0.08, y: -12 } }}
           transition={{ duration: 0.52, ease }}
@@ -636,6 +639,62 @@ function HelmetOverlay({ active, revealed }: { active: Persona; revealed: boolea
       </motion.svg>
       <div className="scanline" />
     </motion.div>
+  );
+}
+
+
+function MaskSpecularPass({ ids, active }: { ids: MaskIds; active: Persona }) {
+  return (
+    <motion.g
+      variants={{ closed: { opacity: 1, y: 0 }, revealed: { opacity: 0.13, y: -10 } }}
+      transition={{ duration: 0.58, ease }}
+      filter={`url(#${ids.inner})`}
+    >
+      <path d="M96 118 C136 82 284 82 324 118" fill="none" stroke="rgba(255,255,255,.72)" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M72 172 C116 142 166 134 210 158 C254 134 304 142 348 172" fill="none" stroke={`url(#${ids.edge})`} strokeWidth="1.8" strokeLinecap="round" opacity="0.76" />
+      <path d="M88 262 C126 284 166 294 210 294 C254 294 294 284 332 262" fill="none" stroke="rgba(255,255,255,.20)" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M128 86 C158 70 262 70 292 86" fill="none" stroke="rgba(255,255,255,.34)" strokeWidth="5" strokeLinecap="round" opacity="0.36" />
+      <path d="M74 206 C116 218 150 218 182 206" fill="none" stroke="rgba(255,255,255,.18)" strokeWidth="6" strokeLinecap="round" opacity="0.38" />
+      <path d="M238 206 C270 218 304 218 346 206" fill="none" stroke="rgba(255,255,255,.18)" strokeWidth="6" strokeLinecap="round" opacity="0.38" />
+      {active.id === "dev" && <path d="M86 102 H132 M288 102 H334 M116 448 H304" stroke={active.accent} strokeOpacity="0.34" strokeWidth="2" strokeLinecap="round" />}
+      {active.id === "ux" && <path d="M110 112 H310 M128 424 H292" stroke={active.accent} strokeOpacity="0.24" strokeWidth="1.5" strokeLinecap="round" />}
+      {active.id === "graphic" && <path d="M84 132 C132 102 158 86 198 56 M336 132 C288 102 262 86 222 56" stroke={active.accent2} strokeOpacity="0.2" strokeWidth="6" strokeLinecap="round" />}
+    </motion.g>
+  );
+}
+
+function MagneticScan({ active }: { active: Persona }) {
+  return (
+    <motion.g initial={false}>
+      <motion.path
+        d="M210 56 V430"
+        stroke={active.accent}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        variants={{ closed: { opacity: 0.28, pathLength: 1 }, revealed: { opacity: [0.28, 0.88, 0.06], pathLength: [1, 0.42, 0.08] } }}
+        transition={{ duration: 0.72, ease }}
+      />
+      <motion.rect
+        x="54"
+        y="92"
+        width="312"
+        height="4"
+        rx="2"
+        fill={active.accent}
+        variants={{ closed: { opacity: 0, y: 0 }, revealed: { opacity: [0, 0.45, 0], y: [0, 176, 318] } }}
+        transition={{ duration: 0.86, ease }}
+      />
+      <motion.path
+        d="M96 190 C130 172 174 170 210 190 C246 170 290 172 324 190"
+        fill="none"
+        stroke={active.accent}
+        strokeWidth="2"
+        strokeLinecap="round"
+        variants={{ closed: { opacity: 0.16, scaleX: 1 }, revealed: { opacity: [0.16, 0.72, 0], scaleX: [1, 1.08, 0.92] } }}
+        transition={{ duration: 0.58, ease }}
+        style={{ transformOrigin: "210px 190px" }}
+      />
+    </motion.g>
   );
 }
 
