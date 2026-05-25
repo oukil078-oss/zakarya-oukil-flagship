@@ -31,3 +31,15 @@ npm run typecheck --workspace=@zakarya/api
 ## Security note
 
 No deployment secrets are committed to the repository. Runtime secrets are configured as provider environment variables.
+
+## Skin changer polish pass
+
+The hero persona system was upgraded after deployment with:
+
+- Preloaded persona portrait assets to remove switching flicker.
+- Layered cross-fade portrait rendering so personas switch without image reflow.
+- SVG helmet construction with persona-specific fragments, visor details and circuit/editorial/precision treatments.
+- Choreographed hover/tap reveal with panel separation, blur, opacity, glow and settling motion.
+- Animated stat panel and text transitions keyed to the active identity.
+- Desktop hover plus mobile tap reveal behavior.
+- Fixed hero card dimensions and selector card heights to reduce layout shift.
