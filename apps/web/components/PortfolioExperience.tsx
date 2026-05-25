@@ -474,9 +474,9 @@ function HelmetOverlay({ active, revealed }: { active: Persona; revealed: boolea
   return (
     <motion.div
       key={active.id}
-      className="reveal-mask helmet-wrap pointer-events-none absolute left-1/2 top-[5.6%] h-[57%] w-[76%] -translate-x-1/2"
-      initial={{ opacity: 0, scale: 1.035, filter: "blur(14px)" }}
-      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+      className="reveal-mask helmet-wrap pointer-events-none absolute left-1/2 top-[5.6%] h-[57%] w-[76%]"
+      initial={{ opacity: 0, x: "-50%", scale: 1.035, filter: "blur(14px)" }}
+      animate={{ opacity: 1, x: "-50%", scale: 1, filter: "blur(0px)" }}
       transition={{ duration: 0.55, ease }}
       data-revealed={revealed}
       data-tone={tone}
