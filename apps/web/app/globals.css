@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --accent: #53e3ff;
+  --accent-2: #8c7dff;
+  --accent-rgb: 83 227 255;
+  --bg: #05070b;
+  --grid: rgba(255,255,255,.055);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--bg); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 16% 10%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 28rem),
+    radial-gradient(circle at 84% 18%, color-mix(in srgb, var(--accent-2) 14%, transparent), transparent 28rem),
+    linear-gradient(180deg, #070a10 0%, #05070b 45%, #030408 100%);
+  color: #f7f7f8;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); color: white; }
+
+.noise::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: .045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
+}
+
+.panel {
+  border: 1px solid rgba(255,255,255,.13);
+  background: linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.035));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 24px 90px rgba(0,0,0,.36);
+  backdrop-filter: blur(22px);
+}
+
+.panel-hard {
+  border: 1px solid rgba(255,255,255,.16);
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 26px 80px rgba(0,0,0,.45);
+}
+
+.sci-corners { position: relative; }
+.sci-corners::before,
+.sci-corners::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--accent);
+  opacity: .82;
+  pointer-events: none;
+}
+.sci-corners::before { left: -1px; top: -1px; border-left: 2px solid; border-top: 2px solid; }
+.sci-corners::after { right: -1px; bottom: -1px; border-right: 2px solid; border-bottom: 2px solid; }
+
+.text-balance { text-wrap: balance; }
+.text-gradient {
+  background: linear-gradient(90deg, white 0%, color-mix(in srgb, var(--accent) 70%, white) 45%, rgba(255,255,255,.65) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.scanline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(var(--accent-rgb), .18), transparent);
+  height: 38%;
+  animation: scan 4.5s linear infinite;
+  mix-blend-mode: screen;
+}
+
+.mask-shell {
+  clip-path: polygon(18% 0%, 82% 0%, 96% 22%, 91% 74%, 70% 100%, 30% 100%, 9% 74%, 4% 22%);
+}
+.mask-shell.designer {
+  clip-path: polygon(16% 2%, 85% 0%, 98% 24%, 88% 80%, 64% 100%, 26% 96%, 4% 68%, 7% 22%);
+}
+.mask-shell.ux {
+  clip-path: polygon(23% 0%, 77% 0%, 95% 18%, 95% 74%, 68% 100%, 32% 100%, 5% 74%, 5% 18%);
+}
+.mask-shell.developer {
+  clip-path: polygon(15% 8%, 35% 0%, 65% 0%, 85% 8%, 100% 32%, 88% 82%, 62% 100%, 38% 100%, 12% 82%, 0 32%);
+}
+
+.portrait-card:hover .reveal-mask,
+.portrait-card:focus-within .reveal-mask,
+.portrait-card.is-revealed .reveal-mask {
+  opacity: .08;
+  transform: translateY(-8px) scale(.985);
+  filter: blur(1px) saturate(.45);
+}
+.portrait-card:hover .portrait-real,
+.portrait-card:focus-within .portrait-real,
+.portrait-card.is-revealed .portrait-real { filter: saturate(1.05) contrast(1.02); }
+
+.portrait-card:hover .visor,
+.portrait-card:focus-within .visor,
+.portrait-card.is-revealed .visor { opacity: 0; transform: scaleX(.4); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

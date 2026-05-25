@@ -1,0 +1,9 @@
+{
+  "name": "Zakarya Oukil Portfolio",
+  "short_name": "Zakarya",
+  "description": "Cinematic portfolio for Zakarya Oukil",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070b",
+  "theme_color": "#53e3ff"
+}

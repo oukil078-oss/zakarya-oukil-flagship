@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: zakarya-oukil-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build --workspace=@zakarya/api && npm run prisma:migrate --workspace=@zakarya/api
+    startCommand: npm run start --workspace=@zakarya/api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: ADMIN_API_KEY
+        generateValue: true
