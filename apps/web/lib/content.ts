@@ -26,7 +26,7 @@ export type Persona = {
   strengths: string[];
 };
 
-// PLACEHOLDER REMOTE IMAGES: replace these with Zakarya's actual photos in one place.
+// PERSONAL PORTRAIT: replace this single local image at public/images/portraits/zakarya-oukil.jpeg if needed.
 export const personas: Persona[] = [
   {
     id: "graphic",
@@ -39,7 +39,7 @@ export const personas: Persona[] = [
     rgb: "255 53 93",
     rank: "S",
     level: 86,
-    photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=1000&q=85",
+    photo: "/images/portraits/zakarya-oukil.jpeg",
     mask: { title: "CHROMA HELM", subtitle: "Identity reveal", visor: "#ff355d", geometry: "designer" },
     stats: [
       { label: "Branding", value: 94 },
@@ -65,7 +65,7 @@ export const personas: Persona[] = [
     rgb: "83 227 255",
     rank: "S",
     level: 91,
-    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=85",
+    photo: "/images/portraits/zakarya-oukil.jpeg",
     mask: { title: "FLOW VISOR", subtitle: "Usability layer", visor: "#53e3ff", geometry: "ux" },
     stats: [
       { label: "Research", value: 86 },
@@ -91,7 +91,7 @@ export const personas: Persona[] = [
     rgb: "157 255 87",
     rank: "S",
     level: 88,
-    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=1000&q=85",
+    photo: "/images/portraits/zakarya-oukil.jpeg",
     mask: { title: "KERNEL MASK", subtitle: "Runtime core", visor: "#9dff57", geometry: "developer" },
     stats: [
       { label: "React / Next", value: 90 },

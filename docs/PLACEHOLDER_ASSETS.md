@@ -2,14 +2,15 @@
 
 The portfolio is intentionally structured so every temporary asset is easy to swap.
 
-## Main portrait placeholders
-Edit `apps/web/lib/content.ts` → `personas[].photo`:
+## Main portrait
 
-- Graphic Designer: Unsplash professional portrait URL
-- UI/UX Designer: Unsplash professional portrait URL
-- Developer: Unsplash professional portrait URL
+Zakarya's real portrait is now used for all three personas.
 
-Replace each URL with Zakarya's final optimized portrait images, ideally stored in `apps/web/public/images/portraits/` and referenced as `/images/portraits/filename.webp`.
+Current file:
+
+`apps/web/public/images/portraits/zakarya-oukil.jpeg`
+
+To replace it later, overwrite this file or update `apps/web/lib/content.ts` → `personas[].photo`.
 
 ## Project thumbnails
 Edit `apps/web/lib/content.ts` → `projects[].image`.
