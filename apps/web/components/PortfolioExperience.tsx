@@ -429,7 +429,7 @@ function PortraitRig({ active }: { active: Persona }) {
           />
         ))}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/18 to-transparent" />
-        <div className="absolute inset-x-[9%] bottom-[12%] h-[26%] rounded-[50%_50%_14%_14%] bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,.16),transparent_36%),linear-gradient(135deg,rgba(255,255,255,.07),rgba(0,0,0,.72))] blur-[.2px]" />
+        <PersonaSuitOverlay active={active} revealed={revealed} />
       </div>
 
       <HelmetOverlay active={active} revealed={revealed} />
@@ -461,23 +461,86 @@ function PortraitRig({ active }: { active: Persona }) {
   );
 }
 
+function PersonaSuitOverlay({ active, revealed }: { active: Persona; revealed: boolean }) {
+  const suitGradient = `suitGradient-${active.id}`;
+  const fabricPattern = `suitFabric-${active.id}`;
+
+  return (
+    <motion.svg
+      key={`suit-${active.id}`}
+      viewBox="0 0 420 520"
+      className="pointer-events-none absolute inset-0 h-full w-full"
+      aria-hidden="true"
+      initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
+      animate={{ opacity: 1, y: revealed ? 5 : 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease }}
+    >
+      <defs>
+        <linearGradient id={suitGradient} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor={active.id === "dev" ? "#0b1118" : active.id === "graphic" ? "#171017" : "#11161c"} stopOpacity="0.72" />
+          <stop offset="0.48" stopColor={active.accent} stopOpacity={active.id === "ux" ? "0.22" : "0.18"} />
+          <stop offset="1" stopColor="#05070b" stopOpacity="0.88" />
+        </linearGradient>
+        <pattern id={fabricPattern} width="18" height="18" patternUnits="userSpaceOnUse">
+          <path d="M0 9H18M9 0V18" stroke="rgba(255,255,255,.08)" strokeWidth="0.7" />
+        </pattern>
+        <filter id={`suitShadow-${active.id}`} x="-20%" y="-20%" width="140%" height="150%">
+          <feDropShadow dx="0" dy="18" stdDeviation="14" floodColor="#000" floodOpacity="0.55" />
+        </filter>
+      </defs>
+
+      <g filter={`url(#suitShadow-${active.id})`}>
+        {active.id === "graphic" && (
+          <>
+            <path d="M52 520 C74 420 122 362 190 348 H230 C300 364 348 424 368 520 Z" fill={`url(#${suitGradient})`} opacity="0.94" />
+            <path d="M120 520 C132 450 158 392 210 368 C262 392 288 450 300 520" fill="rgba(255,255,255,.06)" stroke={active.accent2} strokeOpacity="0.34" strokeWidth="2" />
+            <path d="M92 440 C132 418 164 398 204 354" fill="none" stroke={active.accent} strokeOpacity="0.72" strokeWidth="6" strokeLinecap="round" />
+            <path d="M328 438 C282 420 252 396 218 354" fill="none" stroke={active.accent2} strokeOpacity="0.56" strokeWidth="4" strokeLinecap="round" />
+          </>
+        )}
+        {active.id === "ux" && (
+          <>
+            <path d="M48 520 C78 428 126 374 188 356 H232 C294 374 342 428 372 520 Z" fill={`url(#${suitGradient})`} opacity="0.92" />
+            <path d="M138 520 V418 L188 368 H232 L282 418 V520" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.18)" strokeWidth="1.5" />
+            <path d="M126 436 H294M150 402 H270M174 374 H246" stroke={active.accent} strokeOpacity="0.5" strokeWidth="2" strokeLinecap="round" />
+          </>
+        )}
+        {active.id === "dev" && (
+          <>
+            <path d="M36 520 C66 414 118 354 190 342 H230 C302 354 354 414 384 520 Z" fill={`url(#${suitGradient})`} opacity="0.96" />
+            <path d="M74 520 L116 418 L176 374 H244 L304 418 L346 520" fill={`url(#${fabricPattern})`} opacity="0.55" />
+            <path d="M104 438 H166 V520M316 438 H254 V520M190 362 L210 408 L230 362" stroke={active.accent} strokeOpacity="0.46" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M146 446 H274" stroke="rgba(255,255,255,.18)" strokeWidth="8" strokeLinecap="round" />
+          </>
+        )}
+      </g>
+    </motion.svg>
+  );
+}
+
 function HelmetOverlay({ active, revealed }: { active: Persona; revealed: boolean }) {
-  const gradientId = `metalGradient-${active.id}`;
-  const glowId = `maskGlow-${active.id}`;
-  const circuitId = `circuit-${active.id}`;
-  const tone = active.id === "graphic" ? "editorial" : active.id === "dev" ? "terminal" : "precision";
-  const shell = {
-    closed: { opacity: 1, x: 0, y: 0, scale: 1, filter: "blur(0px)" },
-    revealed: { opacity: 0.2, y: -7, scale: 0.985, filter: "blur(1.2px)" },
+  const ids = {
+    metal: `maskMetal-${active.id}`,
+    dark: `maskDark-${active.id}`,
+    glass: `maskGlass-${active.id}`,
+    edge: `maskEdge-${active.id}`,
+    carbon: `maskCarbon-${active.id}`,
+    glow: `maskGlow-${active.id}`,
+    shadow: `maskShadow-${active.id}`,
+    inner: `maskInnerShadow-${active.id}`,
   };
+  const tone = active.id === "graphic" ? "editorial" : active.id === "dev" ? "terminal" : "precision";
+  const shellRevealOpacity = active.id === "graphic" ? 0.23 : active.id === "dev" ? 0.18 : 0.2;
+  const plate = { duration: 0.74, ease };
+  const glass = { duration: 0.54, ease };
 
   return (
     <motion.div
       key={active.id}
       className="reveal-mask helmet-wrap pointer-events-none absolute left-1/2 top-[5.6%] h-[57%] w-[76%]"
-      initial={{ opacity: 0, x: "-50%", scale: 1.035, filter: "blur(14px)" }}
+      initial={{ opacity: 0, x: "-50%", scale: 1.025, filter: "blur(14px)" }}
       animate={{ opacity: 1, x: "-50%", scale: 1, filter: "blur(0px)" }}
-      transition={{ duration: 0.55, ease }}
+      transition={{ duration: 0.58, ease }}
       data-revealed={revealed}
       data-tone={tone}
     >
@@ -489,68 +552,150 @@ function HelmetOverlay({ active, revealed }: { active: Persona; revealed: boolea
         animate={revealed ? "revealed" : "closed"}
       >
         <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#ffffff" stopOpacity="0.96" />
-            <stop offset="0.42" stopColor="#d9dde2" stopOpacity="0.84" />
-            <stop offset="0.72" stopColor="#7b8189" stopOpacity="0.72" />
-            <stop offset="1" stopColor="#171b22" stopOpacity="0.92" />
+          <linearGradient id={ids.metal} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor={active.id === "graphic" ? "#fff7ef" : "#f7fafc"} stopOpacity="0.98" />
+            <stop offset="0.23" stopColor="#dce2e8" stopOpacity="0.92" />
+            <stop offset="0.48" stopColor={active.id === "dev" ? "#76808b" : "#aeb6c0"} stopOpacity="0.86" />
+            <stop offset="0.78" stopColor={active.id === "graphic" ? "#4d3f46" : active.id === "dev" ? "#151c24" : "#27313a"} stopOpacity="0.96" />
+            <stop offset="1" stopColor="#07090d" stopOpacity="0.98" />
           </linearGradient>
-          <radialGradient id={glowId} cx="50%" cy="35%" r="55%">
-            <stop offset="0" stopColor={active.accent} stopOpacity="0.38" />
+          <linearGradient id={ids.dark} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#171c22" stopOpacity="0.96" />
+            <stop offset="0.52" stopColor="#05070b" stopOpacity="0.98" />
+            <stop offset="1" stopColor="#000" stopOpacity="0.96" />
+          </linearGradient>
+          <linearGradient id={ids.glass} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ffffff" stopOpacity="0.52" />
+            <stop offset="0.28" stopColor={active.accent} stopOpacity="0.36" />
+            <stop offset="0.7" stopColor="#05070b" stopOpacity="0.76" />
+            <stop offset="1" stopColor="#000" stopOpacity="0.88" />
+          </linearGradient>
+          <linearGradient id={ids.edge} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor={active.accent2} stopOpacity="0.1" />
+            <stop offset="0.5" stopColor={active.accent} stopOpacity="0.88" />
+            <stop offset="1" stopColor={active.accent2} stopOpacity="0.1" />
+          </linearGradient>
+          <radialGradient id={ids.glow} cx="50%" cy="36%" r="58%">
+            <stop offset="0" stopColor={active.accent} stopOpacity="0.32" />
             <stop offset="1" stopColor={active.accent} stopOpacity="0" />
           </radialGradient>
-          <pattern id={circuitId} width="34" height="34" patternUnits="userSpaceOnUse">
-            <path d="M0 17H13M21 17H34M17 0V13M17 21V34" stroke={active.accent} strokeOpacity="0.22" strokeWidth="1" />
+          <pattern id={ids.carbon} width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(32)">
+            <rect width="18" height="18" fill="#05070b" opacity="0.25" />
+            <path d="M0 0H18M0 9H18" stroke="rgba(255,255,255,.12)" strokeWidth="1" />
           </pattern>
+          <filter id={ids.shadow} x="-24%" y="-22%" width="148%" height="150%">
+            <feDropShadow dx="0" dy="16" stdDeviation="12" floodColor="#000" floodOpacity="0.55" />
+            <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor={active.accent} floodOpacity="0.28" />
+          </filter>
+          <filter id={ids.inner} x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#fff" floodOpacity="0.18" />
+            <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="#000" floodOpacity="0.48" />
+          </filter>
         </defs>
 
-        <ellipse cx="210" cy="238" rx="174" ry="214" fill={`url(#${glowId})`} opacity="0.55" />
-        <motion.g variants={shell} transition={{ duration: 0.64, ease }}>
-          <motion.path variants={{ closed: { x: 0 }, revealed: { x: -30, y: -5 } }} d="M204 20 C126 22 70 68 48 142 L32 238 L48 346 L106 456 L196 504 L202 20 Z" fill={`url(#${gradientId})`} stroke="rgba(255,255,255,.46)" strokeWidth="2" />
-          <motion.path variants={{ closed: { x: 0 }, revealed: { x: 30, y: -5 } }} d="M216 20 C294 22 350 68 372 142 L388 238 L372 346 L314 456 L224 504 L218 20 Z" fill={`url(#${gradientId})`} stroke="rgba(255,255,255,.46)" strokeWidth="2" />
-          <motion.path variants={{ closed: { y: 0, opacity: 1 }, revealed: { y: 24, opacity: 0.22 } }} d="M122 382 L174 432 L210 446 L246 432 L298 382 L278 478 L226 514 L194 514 L142 478 Z" fill="#090b10" stroke="rgba(255,255,255,.22)" strokeWidth="2" />
-          <motion.path variants={{ closed: { y: 0 }, revealed: { y: -10, opacity: 0.25 } }} d="M120 66 L186 38 L210 86 L234 38 L300 66 L324 132 L230 118 L210 142 L190 118 L96 132 Z" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.42)" strokeWidth="1.5" />
-          <path d="M210 24 V430" stroke="rgba(0,0,0,.48)" strokeWidth="2" />
-        </motion.g>
+        <motion.ellipse
+          cx="210"
+          cy="238"
+          rx="178"
+          ry="214"
+          fill={`url(#${ids.glow})`}
+          variants={{ closed: { opacity: 0.58, scale: 1 }, revealed: { opacity: 0.16, scale: 1.08 } }}
+          transition={{ duration: 0.68, ease }}
+        />
 
-        <motion.g transition={{ duration: 0.55, ease }} variants={{ closed: { opacity: 1 }, revealed: { opacity: 0, scale: 0.72 } }}>
-          <path d="M78 190 C108 168 154 166 184 184 L164 222 C126 220 98 216 70 206 Z" fill="#05070b" stroke="rgba(255,255,255,.18)" strokeWidth="2" />
-          <path d="M342 190 C312 168 266 166 236 184 L256 222 C294 220 322 216 350 206 Z" fill="#05070b" stroke="rgba(255,255,255,.18)" strokeWidth="2" />
-          <ellipse cx="138" cy="198" rx="16" ry="10" fill={active.accent} opacity="0.95" />
-          <ellipse cx="282" cy="198" rx="16" ry="10" fill={active.accent} opacity="0.95" />
-        </motion.g>
+        <g filter={`url(#${ids.shadow})`}>
+          {active.id === "graphic" && <GraphicDesignerMask ids={ids} active={active} revealedOpacity={shellRevealOpacity} plate={plate} glass={glass} />}
+          {active.id === "ux" && <UXDesignerMask ids={ids} active={active} revealedOpacity={shellRevealOpacity} plate={plate} glass={glass} />}
+          {active.id === "dev" && <DeveloperMask ids={ids} active={active} revealedOpacity={shellRevealOpacity} plate={plate} glass={glass} />}
+        </g>
 
-        <motion.g variants={{ closed: { opacity: 0.95, y: 0 }, revealed: { opacity: 0.12, y: -8 } }} transition={{ duration: 0.5, ease }}>
-          {active.id === "graphic" && (
-            <>
-              <path d="M82 145 L164 88" stroke={active.accent2} strokeWidth="10" strokeLinecap="round" opacity="0.75" />
-              <path d="M256 88 L338 145" stroke={active.accent} strokeWidth="10" strokeLinecap="round" opacity="0.75" />
-              <path d="M96 302 L176 270" stroke={active.accent2} strokeWidth="6" strokeLinecap="round" opacity="0.72" />
-            </>
-          )}
-          {active.id === "ux" && (
-            <>
-              <path d="M94 142 H184 M236 142 H326 M106 328 H174 M246 328 H314" stroke={active.accent} strokeWidth="3" strokeLinecap="round" opacity="0.78" />
-              <circle cx="184" cy="142" r="5" fill={active.accent} /><circle cx="236" cy="142" r="5" fill={active.accent} />
-              <circle cx="174" cy="328" r="5" fill={active.accent2} /><circle cx="246" cy="328" r="5" fill={active.accent2} />
-            </>
-          )}
-          {active.id === "dev" && (
-            <>
-              <path d="M78 268 H130 V304 H172 M342 268 H290 V304 H248 M210 112 V160" stroke={active.accent} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.74" />
-              <path d="M72 126 H348 V366 H72 Z" fill={`url(#${circuitId})`} opacity="0.36" />
-              <circle cx="172" cy="304" r="5" fill={active.accent} /><circle cx="248" cy="304" r="5" fill={active.accent} />
-            </>
-          )}
-        </motion.g>
-
-        <motion.g variants={{ closed: { opacity: 0.92 }, revealed: { opacity: 0.06 } }} transition={{ duration: 0.45, ease }}>
-          <path d="M112 250 H308" stroke="rgba(255,255,255,.24)" strokeWidth="1" />
-          <path d="M150 92 L184 116 M270 92 L236 116 M90 356 L134 346 M330 356 L286 346" stroke="rgba(0,0,0,.42)" strokeWidth="2" strokeLinecap="round" />
+        <motion.g
+          variants={{ closed: { opacity: 0.95, y: 0 }, revealed: { opacity: 0.08, y: -12 } }}
+          transition={{ duration: 0.52, ease }}
+        >
+          {Array.from({ length: 16 }).map((_, index) => {
+            const x = 68 + (index * 41) % 286;
+            const y = 118 + (index * 53) % 260;
+            return (
+              <motion.circle
+                key={`${active.id}-dust-${index}`}
+                cx={x}
+                cy={y}
+                r={index % 3 === 0 ? 1.7 : 1.05}
+                fill={active.accent}
+                initial={false}
+                variants={{
+                  closed: { opacity: 0, x: 0, y: 0 },
+                  revealed: { opacity: [0, 0.42, 0], x: (index % 2 ? 1 : -1) * (12 + index), y: -10 - index * 0.45 },
+                }}
+                transition={{ duration: 0.8, delay: index * 0.012, ease }}
+              />
+            );
+          })}
         </motion.g>
       </motion.svg>
       <div className="scanline" />
     </motion.div>
+  );
+}
+
+type MaskIds = Record<"metal" | "dark" | "glass" | "edge" | "carbon" | "glow" | "shadow" | "inner", string>;
+type MaskProps = { ids: MaskIds; active: Persona; revealedOpacity: number; plate: { duration: number; ease: typeof ease }; glass: { duration: number; ease: typeof ease } };
+
+function GraphicDesignerMask({ ids, active, revealedOpacity, plate, glass }: MaskProps) {
+  return (
+    <>
+      <motion.path variants={{ closed: { opacity: 1, x: 0, y: 0, rotate: 0 }, revealed: { opacity: revealedOpacity, x: -44, y: -8, rotate: -4 } }} transition={plate} style={{ transformOrigin: "160px 250px" }} d="M204 34 C122 38 72 88 54 166 C42 220 44 304 68 360 C90 412 138 464 198 498 L206 368 L190 302 L202 218 L192 142 Z" fill={`url(#${ids.metal})`} stroke="rgba(255,255,255,.48)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 1, x: 0, y: 0, rotate: 0 }, revealed: { opacity: revealedOpacity, x: 44, y: -8, rotate: 4 } }} transition={plate} style={{ transformOrigin: "260px 250px" }} d="M216 34 C298 38 348 88 366 166 C378 220 376 304 352 360 C330 412 282 464 222 498 L214 368 L230 302 L218 218 L228 142 Z" fill={`url(#${ids.metal})`} stroke="rgba(255,255,255,.48)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 1, y: 0 }, revealed: { opacity: 0.16, y: -26 } }} transition={plate} d="M112 88 C146 42 274 42 308 88 L330 146 C284 128 242 120 210 120 C178 120 136 128 90 146 Z" fill="rgba(255,255,255,.42)" stroke="rgba(255,255,255,.42)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 0.92, y: 0, scale: 1 }, revealed: { opacity: 0.04, y: -16, scale: 0.9 } }} transition={glass} d="M72 194 C112 158 174 158 204 188 C234 158 300 158 348 194 L326 238 C274 232 238 224 210 206 C182 224 146 232 94 238 Z" fill={`url(#${ids.glass})`} stroke={active.accent} strokeOpacity="0.58" strokeWidth="2.5" />
+      <motion.path variants={{ closed: { opacity: 1, y: 0 }, revealed: { opacity: 0.1, y: 34 } }} transition={plate} d="M118 334 C146 372 178 392 210 398 C242 392 274 372 302 334 L284 430 C254 466 230 484 210 488 C190 484 166 466 136 430 Z" fill={`url(#${ids.dark})`} stroke="rgba(255,255,255,.22)" strokeWidth="2" />
+      <motion.g variants={{ closed: { opacity: 1 }, revealed: { opacity: 0.08, x: -18 } }} transition={plate}>
+        <path d="M76 150 C128 114 166 92 208 62" stroke={active.accent2} strokeWidth="9" strokeLinecap="round" opacity="0.72" />
+        <path d="M342 150 C286 112 252 94 212 62" stroke={active.accent} strokeWidth="6" strokeLinecap="round" opacity="0.86" />
+        <path d="M98 292 C132 278 164 260 196 232" stroke={active.accent2} strokeWidth="4" strokeLinecap="round" opacity="0.56" />
+      </motion.g>
+      <path d="M210 58 V408" stroke="rgba(0,0,0,.34)" strokeWidth="1.5" />
+      <path d="M102 112 C146 92 274 92 318 112" fill="none" stroke="rgba(255,255,255,.55)" strokeWidth="1" />
+    </>
+  );
+}
+
+function UXDesignerMask({ ids, active, revealedOpacity, plate, glass }: MaskProps) {
+  return (
+    <>
+      <motion.path variants={{ closed: { opacity: 1, x: 0, y: 0 }, revealed: { opacity: revealedOpacity, x: -36, y: -5 } }} transition={plate} d="M204 30 C130 34 78 82 58 160 L44 252 L62 358 L122 454 L198 500 L204 30 Z" fill={`url(#${ids.metal})`} stroke="rgba(255,255,255,.5)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 1, x: 0, y: 0 }, revealed: { opacity: revealedOpacity, x: 36, y: -5 } }} transition={plate} d="M216 30 C290 34 342 82 362 160 L376 252 L358 358 L298 454 L222 500 L216 30 Z" fill={`url(#${ids.metal})`} stroke="rgba(255,255,255,.5)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 0.96, y: 0 }, revealed: { opacity: 0.05, y: -10 } }} transition={glass} d="M82 178 C122 152 174 150 210 176 C246 150 298 152 338 178 V224 C286 236 246 226 210 204 C174 226 134 236 82 224 Z" fill={`url(#${ids.glass})`} stroke={active.accent} strokeOpacity="0.5" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 1, y: 0 }, revealed: { opacity: 0.14, y: -22 } }} transition={plate} d="M100 108 C128 72 292 72 320 108 L344 158 C292 140 246 134 210 134 C174 134 128 140 76 158 Z" fill="rgba(255,255,255,.46)" stroke="rgba(255,255,255,.44)" strokeWidth="1.8" />
+      <motion.path variants={{ closed: { opacity: 1, y: 0 }, revealed: { opacity: 0.1, y: 30 } }} transition={plate} d="M126 330 H294 L278 420 L236 470 H184 L142 420 Z" fill={`url(#${ids.dark})`} stroke="rgba(255,255,255,.2)" strokeWidth="2" />
+      <motion.g variants={{ closed: { opacity: 0.9 }, revealed: { opacity: 0.08 } }} transition={plate}>
+        <path d="M88 150 H176 M244 150 H332 M108 298 H180 M240 298 H312" stroke={active.accent} strokeWidth="3" strokeLinecap="round" />
+        <circle cx="176" cy="150" r="4.5" fill={active.accent} /><circle cx="244" cy="150" r="4.5" fill={active.accent} />
+        <path d="M146 382 H274" stroke={active.accent2} strokeOpacity="0.6" strokeWidth="2" strokeLinecap="round" />
+      </motion.g>
+      <path d="M210 40 V424" stroke="rgba(255,255,255,.22)" strokeWidth="1" />
+      <path d="M118 116 C154 104 266 104 302 116" fill="none" stroke="rgba(255,255,255,.55)" strokeWidth="1" />
+    </>
+  );
+}
+
+function DeveloperMask({ ids, active, revealedOpacity, plate, glass }: MaskProps) {
+  return (
+    <>
+      <motion.path variants={{ closed: { opacity: 1, x: 0, y: 0, rotate: 0 }, revealed: { opacity: revealedOpacity, x: -48, y: -4, rotate: -2.5 } }} transition={plate} style={{ transformOrigin: "164px 260px" }} d="M202 38 L156 34 L92 76 L56 152 L40 248 L60 354 L128 454 L198 500 L208 394 L186 318 L198 238 L182 150 Z" fill={`url(#${ids.metal})`} stroke="rgba(255,255,255,.42)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 1, x: 0, y: 0, rotate: 0 }, revealed: { opacity: revealedOpacity, x: 48, y: -4, rotate: 2.5 } }} transition={plate} style={{ transformOrigin: "256px 260px" }} d="M218 38 L264 34 L328 76 L364 152 L380 248 L360 354 L292 454 L222 500 L212 394 L234 318 L222 238 L238 150 Z" fill={`url(#${ids.metal})`} stroke="rgba(255,255,255,.42)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 0.98, y: 0, scale: 1 }, revealed: { opacity: 0.04, y: -8, scale: 0.86 } }} transition={glass} d="M70 184 C110 152 168 150 202 180 C236 150 310 152 350 184 L334 234 C286 232 246 224 210 206 C174 224 134 232 86 234 Z" fill={`url(#${ids.glass})`} stroke={active.accent} strokeOpacity="0.68" strokeWidth="3" />
+      <motion.path variants={{ closed: { opacity: 1, y: 0 }, revealed: { opacity: 0.15, y: -18 } }} transition={plate} d="M92 104 L150 52 H270 L328 104 L348 162 C296 142 250 136 210 136 C170 136 124 142 72 162 Z" fill={`url(#${ids.carbon})`} stroke="rgba(255,255,255,.36)" strokeWidth="2" />
+      <motion.path variants={{ closed: { opacity: 1, y: 0 }, revealed: { opacity: 0.08, y: 38 } }} transition={plate} d="M112 320 L158 350 H262 L308 320 L292 432 L246 488 H174 L128 432 Z" fill={`url(#${ids.dark})`} stroke="rgba(255,255,255,.2)" strokeWidth="2.5" />
+      <motion.g variants={{ closed: { opacity: 0.96 }, revealed: { opacity: 0.08 } }} transition={plate}>
+        <path d="M78 266 H132 V306 H174 M342 266 H288 V306 H246 M210 88 V134" stroke={active.accent} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M146 382 H274 M156 404 H264 M168 426 H252" stroke="rgba(255,255,255,.22)" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="174" cy="306" r="5" fill={active.accent} /><circle cx="246" cy="306" r="5" fill={active.accent} />
+      </motion.g>
+      <path d="M210 48 V424" stroke="rgba(0,0,0,.5)" strokeWidth="2" />
+      <path d="M104 124 C150 106 270 106 316 124" fill="none" stroke="rgba(255,255,255,.44)" strokeWidth="1" />
+    </>
   );
 }
 
