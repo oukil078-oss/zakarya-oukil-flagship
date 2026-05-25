@@ -1,36 +1,33 @@
 # Deployment status
 
 ## Completed
-- Full Next.js 15 + React + TypeScript frontend built from scratch.
-- Cinematic persona hero with Graphic Designer / UI/UX Designer / Developer skins.
-- Hover/tap mask reveal over the portrait area.
-- Projects, About, Skills, Timeline, Services, Testimonials, Resume, Contact, Footer and 404 page.
-- Express + Prisma + PostgreSQL backend with real persistence for contact messages and newsletter subscribers.
-- Prisma schema + migration + seed file.
-- Production README and placeholder asset documentation.
-- Local quality checks passed:
-  - `npm run build`
-  - `npm run lint`
-  - `npm run typecheck --workspace=@zakarya/web`
-  - `npm run typecheck --workspace=@zakarya/api`
 
-## Pending
-Deployment was not executed because deployment/API secrets are not present as secure environment variables in this workspace.
+- GitHub repository created and pushed.
+- Supabase PostgreSQL connected through the Supabase session pooler.
+- Prisma migration applied successfully.
+- Render backend deployed and health checked.
+- Vercel frontend deployed and aliased to the production domain.
+- Render CORS configured for the Vercel frontend origin.
+- Contact endpoint verified with a production POST request.
 
-For safety, plaintext secrets pasted into chat were not written to files, printed, committed, or used in shell commands.
+## Live URLs
 
-## Required secure environment variables
-- `GITHUB_TOKEN`
-- `VERCEL_TOKEN`
-- `RENDER_API_KEY`
-- `DATABASE_URL`
+- Frontend: https://zakarya-oukil-flagship.vercel.app
+- Backend API: https://zakarya-oukil-api.onrender.com
+- Backend health: https://zakarya-oukil-api.onrender.com/health
+- GitHub: https://github.com/oukil078-oss/zakarya-oukil-flagship
 
-After these are injected as environment variables, run:
+## Quality checks
+
+Passed locally before deployment:
 
 ```bash
-cd zakarya-oukil-flagship
-./scripts/push-github.sh
-./scripts/deploy-render.sh
-# create Render service from apps/api/render.yaml or dashboard, then set NEXT_PUBLIC_API_URL
-./scripts/deploy-vercel.sh
+npm run lint
+npm run build
+npm run typecheck --workspace=@zakarya/web
+npm run typecheck --workspace=@zakarya/api
 ```
+
+## Security note
+
+No deployment secrets are committed to the repository. Runtime secrets are configured as provider environment variables.

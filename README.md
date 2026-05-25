@@ -8,6 +8,21 @@ A production-ready cinematic personal brand experience for **Zakarya Oukil** wit
 
 The hero adapts the attached futuristic robot-selection reference into a premium portfolio command deck: persona cards on the left, a central portrait/mask reveal, and animated stats on the right.
 
+
+## Live deployment
+
+- Frontend: https://zakarya-oukil-flagship.vercel.app
+- Backend API: https://zakarya-oukil-api.onrender.com
+- Backend health: https://zakarya-oukil-api.onrender.com/health
+- GitHub: https://github.com/oukil078-oss/zakarya-oukil-flagship
+
+Production verification completed:
+
+- Vercel frontend returns `200 OK`
+- Render health returns `status: ok` and `database: connected`
+- Contact form CORS preflight passes from the Vercel domain
+- Contact form POST stores messages in PostgreSQL
+
 ## Stack
 
 ### Frontend
