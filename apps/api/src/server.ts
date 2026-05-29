@@ -5,7 +5,7 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import morgan from "morgan";
 import { env } from "./lib/env.js";
-import { prisma } from "./lib/prisma.js";
+import { appwrite } from "./lib/appwrite.js";
 import { adminRouter } from "./routes/admin.js";
 import { publicRouter } from "./routes/public.js";
 
@@ -36,10 +36,14 @@ const contactLimiter = rateLimit({
 
 app.get("/health", async (_req, res) => {
   try {
-    await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: "ok", database: "connected", service: "zakarya-oukil-api", timestamp: new Date().toISOString() });
+    await appwrite.databases.listDocuments({
+      databaseId: appwrite.databaseId,
+      collectionId: appwrite.contactCollectionId,
+      queries: [appwrite.Query.limit(1)],
+    });
+    res.json({ status: "ok", database: "appwrite-connected", service: "zakarya-oukil-api", timestamp: new Date().toISOString() });
   } catch {
-    res.status(503).json({ status: "degraded", database: "unavailable" });
+    res.status(503).json({ status: "degraded", database: "appwrite-unavailable" });
   }
 });
 
@@ -50,8 +54,8 @@ app.use("/api/admin", adminRouter);
 app.use((_req, res) => res.status(404).json({ message: "Route not found" }));
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
-  if (typeof err?.code === "string" && err.code.startsWith("P")) {
-    return res.status(400).json({ message: "Database request failed", code: err.code });
+  if (typeof err?.code === "number" || typeof err?.type === "string") {
+    return res.status(err.code === 401 ? 401 : 400).json({ message: "Appwrite request failed", code: err.code, type: err.type });
   }
   if (err?.name === "ZodError") return res.status(400).json({ message: "Validation failed", issues: err.issues });
   const status = err?.status || 500;

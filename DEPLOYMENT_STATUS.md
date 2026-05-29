@@ -3,8 +3,8 @@
 ## Completed
 
 - GitHub repository created and pushed.
-- Supabase PostgreSQL connected through the Supabase session pooler.
-- Prisma migration applied successfully.
+- Appwrite Databases connected for contact and newsletter persistence.
+- Appwrite database and collections provisioned successfully.
 - Render backend deployed and health checked.
 - Vercel frontend deployed and aliased to the production domain.
 - Render CORS configured for the Vercel frontend origin.
@@ -43,3 +43,7 @@ The hero persona system was upgraded after deployment with:
 - Animated stat panel and text transitions keyed to the active identity.
 - Desktop hover plus mobile tap reveal behavior.
 - Fixed hero card dimensions and selector card heights to reduce layout shift.
+
+## Appwrite migration
+
+The backend database layer has been migrated from PostgreSQL/Prisma to Appwrite Databases. No Appwrite API keys are committed to the repository; they are configured in Render environment variables.

@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
-import { prisma } from "../lib/prisma.js";
+import { appwrite } from "../lib/appwrite.js";
 import { hashIp } from "../lib/hash.js";
+import { apiPersonas, apiProjects, apiTestimonials } from "../lib/static-content.js";
 
 export const publicRouter = Router();
 
@@ -18,31 +19,16 @@ const newsletterSchema = z.object({
   source: z.string().trim().max(80).optional(),
 });
 
-publicRouter.get("/projects", async (_req, res, next) => {
-  try {
-    const projects = await prisma.project.findMany({ orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }] });
-    res.json({ data: projects });
-  } catch (error) {
-    next(error);
-  }
+publicRouter.get("/projects", (_req, res) => {
+  res.json({ data: apiProjects });
 });
 
-publicRouter.get("/testimonials", async (_req, res, next) => {
-  try {
-    const testimonials = await prisma.testimonial.findMany({ where: { featured: true }, orderBy: { createdAt: "desc" } });
-    res.json({ data: testimonials });
-  } catch (error) {
-    next(error);
-  }
+publicRouter.get("/testimonials", (_req, res) => {
+  res.json({ data: apiTestimonials });
 });
 
-publicRouter.get("/personas", async (_req, res, next) => {
-  try {
-    const personas = await prisma.personaConfig.findMany({ orderBy: { label: "asc" } });
-    res.json({ data: personas });
-  } catch (error) {
-    next(error);
-  }
+publicRouter.get("/personas", (_req, res) => {
+  res.json({ data: apiPersonas });
 });
 
 publicRouter.post("/contact", async (req, res, next) => {
@@ -51,15 +37,21 @@ publicRouter.post("/contact", async (req, res, next) => {
     if (!parsed.success) {
       return res.status(400).json({ message: "Please check the form fields.", issues: parsed.error.flatten().fieldErrors });
     }
-    const created = await prisma.contactMessage.create({
+
+    const created = await appwrite.databases.createDocument({
+      databaseId: appwrite.databaseId,
+      collectionId: appwrite.contactCollectionId,
+      documentId: appwrite.ID.unique(),
       data: {
         ...parsed.data,
-        ipHash: hashIp(req.ip),
-        userAgent: req.get("user-agent"),
+        ipHash: hashIp(req.ip) ?? "",
+        userAgent: req.get("user-agent") ?? "",
+        status: "new",
+        createdAt: new Date().toISOString(),
       },
-      select: { id: true, createdAt: true },
     });
-    return res.status(201).json({ message: "Message received.", data: created });
+
+    return res.status(201).json({ message: "Message received.", data: { id: created.$id, createdAt: created.$createdAt } });
   } catch (error) {
     next(error);
   }
@@ -69,13 +61,29 @@ publicRouter.post("/newsletter", async (req, res, next) => {
   try {
     const parsed = newsletterSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ message: "Invalid email address." });
-    const subscriber = await prisma.newsletterSubscriber.upsert({
-      where: { email: parsed.data.email },
-      update: { source: parsed.data.source },
-      create: parsed.data,
-      select: { id: true, email: true, createdAt: true },
+
+    const existing = await appwrite.databases.listDocuments({
+      databaseId: appwrite.databaseId,
+      collectionId: appwrite.newsletterCollectionId,
+      queries: [appwrite.Query.equal("email", parsed.data.email), appwrite.Query.limit(1)],
     });
-    res.status(201).json({ message: "Subscribed.", data: subscriber });
+
+    if (existing.total > 0) {
+      return res.status(200).json({ message: "Already subscribed.", data: { id: existing.documents[0].$id, email: parsed.data.email } });
+    }
+
+    const subscriber = await appwrite.databases.createDocument({
+      databaseId: appwrite.databaseId,
+      collectionId: appwrite.newsletterCollectionId,
+      documentId: appwrite.ID.unique(),
+      data: {
+        email: parsed.data.email,
+        source: parsed.data.source ?? "portfolio",
+        createdAt: new Date().toISOString(),
+      },
+    });
+
+    res.status(201).json({ message: "Subscribed.", data: { id: subscriber.$id, email: parsed.data.email } });
   } catch (error) {
     next(error);
   }

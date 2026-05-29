@@ -35,8 +35,7 @@ Production verification completed:
 
 ### Backend
 - Node.js / Express
-- PostgreSQL
-- Prisma ORM
+- Appwrite Databases
 - Zod validation
 - Helmet, CORS, compression
 - Rate-limited contact endpoint
@@ -75,7 +74,12 @@ Never commit real secrets. Set these in your local `.env`, Vercel, and Render da
 ```env
 NEXT_PUBLIC_SITE_URL=https://your-vercel-domain.vercel.app
 NEXT_PUBLIC_API_URL=https://your-render-service.onrender.com
-DATABASE_URL=postgresql://...
+APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=your-appwrite-project-id
+APPWRITE_API_KEY=your-appwrite-api-key
+APPWRITE_DATABASE_ID=portfolio
+APPWRITE_CONTACT_COLLECTION_ID=contact_messages
+APPWRITE_NEWSLETTER_COLLECTION_ID=newsletter_subscribers
 FRONTEND_ORIGIN=https://your-vercel-domain.vercel.app
 ADMIN_API_KEY=long-random-secret
 ```
@@ -90,23 +94,15 @@ RENDER_API_KEY=
 
 ## Database
 
-Prisma schema is in `apps/api/prisma/schema.prisma`.
+The production backend now uses **Appwrite Databases** instead of PostgreSQL/Prisma.
 
-Run migrations:
+Appwrite resources:
 
-```bash
-npm run prisma:migrate --workspace=@zakarya/api
-npm run prisma:seed --workspace=@zakarya/api
-```
+- Database: `portfolio`
+- Collection: `contact_messages`
+- Collection: `newsletter_subscribers`
 
-Tables:
-- `contact_messages`
-- `newsletter_subscribers`
-- `projects`
-- `testimonials`
-- `profile_content`
-- `social_links`
-- `persona_configs`
+The contact form writes real documents to Appwrite. Newsletter submissions are deduplicated by email.
 
 ## API endpoints
 
@@ -159,7 +155,7 @@ See [`docs/PLACEHOLDER_ASSETS.md`](docs/PLACEHOLDER_ASSETS.md).
 
 ## Notes
 
-- The contact form is backed by a real PostgreSQL persistence layer through the API.
+- The contact form is backed by real Appwrite Databases persistence through the API.
 - The mask reveal works by layering a CSS/SVG-style helmet over the persona portrait and fading it on hover/tap.
 - Mobile uses tap-to-reveal and a stacked command-deck layout.
 - The attached reference is interpreted as art direction, not copied directly.

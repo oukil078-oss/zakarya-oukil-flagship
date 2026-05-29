@@ -4,14 +4,23 @@ services:
     runtime: node
     plan: free
     buildCommand: npm ci --include=dev && npm run build --workspace=@zakarya/api
-    preDeployCommand: npm run prisma:migrate --workspace=@zakarya/api
     startCommand: npm run start --workspace=@zakarya/api
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
+      - key: APPWRITE_ENDPOINT
         sync: false
+      - key: APPWRITE_PROJECT_ID
+        sync: false
+      - key: APPWRITE_API_KEY
+        sync: false
+      - key: APPWRITE_DATABASE_ID
+        value: portfolio
+      - key: APPWRITE_CONTACT_COLLECTION_ID
+        value: contact_messages
+      - key: APPWRITE_NEWSLETTER_COLLECTION_ID
+        value: newsletter_subscribers
       - key: FRONTEND_ORIGIN
         sync: false
       - key: ADMIN_API_KEY
